@@ -1,24 +1,28 @@
 import React, { useState } from 'react';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import {auth} from "../scripts/firebase-config"
-import { createUserWithEmailAndPassworde } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../scripts/firebase-config"
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useRouter } from 'expo-router';
+import {set, ref} from "firebase/database"
 
 
 export default function CreateUser() {
     const [nome, setNome] = useState("")
-    const [error, setError] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [erro, setErro] = useState("")
-    const route = useRouter
+    const router = useRouter()
 
     function createUser() {
-        createUserWithEmailAndPassworde(auth, email, password)
+        createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
-            route.push("/");
+            set(ref(db, 'users/' + user.uid), {
+            username: nome,
+            email: email,
+            profile_picture : ""
+           });
+            router.push("/");
         })
         .catch((error) => {
             const errorCode = error.code;

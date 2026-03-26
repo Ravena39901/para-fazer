@@ -1,9 +1,30 @@
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../scripts/firebase-config';
 
 export default function Index() {
     const router = useRouter();
+
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [errorLogin, setErrorLogin] = useState("")
+
+    function login(){
+          signInWithEmailAndPassword(auth, email, password)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    router.push('/(tabs)')
+    // ...
+  })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setErrorLogin(errorMessage)
+  });
+    }
     return (
         <View style={styles.container}>
             <Image style={styles.logo} source={require('../assets/images/logo_pra_fazer.png')} />
@@ -15,15 +36,18 @@ export default function Index() {
             <TextInput
                 style={styles.input}
                 placeholder='E-mail'
+                onChangeText={setEmail}
+                secureTextEntry={true}
             />
 
             <TextInput
                 style={styles.input}
                 placeholder='Senha'
+                onChangeText={setPassword}
                 secureTextEntry={true}
             />
 
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={() => login()}>
                 <Text style={styles.textButton}>Entrar</Text>
             </TouchableOpacity>
 
